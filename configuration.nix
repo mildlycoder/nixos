@@ -10,10 +10,10 @@
       ./hardware-configuration.nix
     ];
 
+  nix.settings.experimental-features = ["nix-command" "flakes"];
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -42,10 +42,6 @@
     LC_TIME = "en_IN";
   };
   fonts = {
-  enableDefaultPackages = true;
-  packages = with pkgs; [ 
-  	nerdfonts
-  ];
 
   fontconfig = {
     defaultFonts = {
@@ -58,6 +54,11 @@
 services.openssh = {
     enable = true;
 };
+#swap file
+swapDevices = [ 
+  { device = "/swapfile"; }
+];
+
 
 services.openssh.settings.PermitRootLogin = "prohibit-password"; # Optional: Control root login
 services.openssh.settings.PasswordAuthentication = false; # Optional: Disable password authentication
@@ -65,15 +66,17 @@ services.openssh.settings.PasswordAuthentication = false; # Optional: Disable pa
   services.xserver.enable = true;
 
   # Enable the KDE Desktop Environment.
-  services.displayManager.sddm.enable = true;
-services.xserver.desktopManager.plasma5.enable = true;
+  services.xserver = {
+  layout = "us";                    # Set to your desired layout
+  xkbVariant = "";                   # Variant (if any)
+  displayManager.sddm.enable = true; # Enabling SDDM
+  desktopManager.plasma5.enable = true; # Example desktop manager
+  };
+
 qt.enable = true;
 hardware.bluetooth.enable = true;
   # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
-  };
+
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -103,7 +106,7 @@ hardware.bluetooth.enable = true;
   users.users.pranavk = {
     isNormalUser = true;
     description = "Pranavk";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "kvm" "docker"];
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -121,6 +124,11 @@ programs.hyprland = {
 };
 
 services.blueman.enable = true;
+programs.adb.enable = true;
+services.docker = {
+  enableUserServices = true;
+};
+virtualisation.docker.enable = true;
 environment.variables.EDITOR = "nvim";
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -134,29 +142,47 @@ environment.variables.EDITOR = "nvim";
   nodejs_22
   go
   dart
-  flutter319
   yarn
-  pnpm
   sqlite
   zsh
   fzf
+  bat
   neovim
   kitty
   tmux
   tmuxifier
   gh
+  distrobox
+  flutter319
   
-  brave
+  marktext
+  obsidian
   protonvpn-gui
   protonvpn-cli
   networkmanagerapplet
   openssh
 
+  nodePackages_latest.live-server
+  nodePackages_latest.nodemon
+  nodePackages_latest.ts-node
+  nodePackages_latest.expo-cli
+  ngrok
+  docker
+  docker-compose
+  docker-client
+  android-studio
+  android-tools
+  sdkmanager
+  air
+
   oh-my-zsh
   zsh-syntax-highlighting
   zsh-autosuggestions
   starship
+  fastfetch
+  ani-cli
 
+  ripgrep
   xclip
   pavucontrol
   killall
@@ -168,25 +194,28 @@ environment.variables.EDITOR = "nvim";
   wireplumber
   rofi-wayland
   rofi-power-menu
-  wofi
-  tofi
   fuzzel
   bemenu
   dunst
   libnotify
   waybar
   blueman
+  cinnamon.nemo
   hyprpaper
   xdg-desktop-portal-gtk
   brightnessctl
-  nwg-look
-  yazi
   pywal
   grim
   slurp
   wl-clipboard
   wl-clipboard-x11
   cliphist
+  networkmanagerapplet
+  wofi
+  gnome.gnome-clocks
+  discord
+  libreoffice-qt6-still
+  bookworm
 ];
 xdg.portal.enable = true;
 xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
